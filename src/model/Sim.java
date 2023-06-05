@@ -1,5 +1,6 @@
 package model;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * SIM Class
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
  *
  */
 public class Sim {
-    //    private UUID simID;
+    private UUID simID;
     private String simName;                 // User Defined Statement to define a SIM
     private String simNumber;               // Phone Number registered to this SIM
     private int simPIN;                     // SIM PIN code assigned to this SIM
@@ -76,119 +77,95 @@ public class Sim {
     }
 
     //Encapsulation (Getter and Setters)
+    public UUID getSimID(){return simID;}
     public String getSimName() {
         return simName;
     }
-
     public void setSimName(String simName) {
         this.simName = simName;
     }
-
     public String getSimNumber() {
         return simNumber;
     }
-
     public void setSimNumber(String simNumber) {
         this.simNumber = simNumber;
     }
-
     public int getSimPIN() {
         return simPIN;
     }
-
     public void setSimPIN(int simPIN) {
         this.simPIN = simPIN;
     }
-
     public String getSimCountry() {
         return simCountry;
     }
-
     public void setSimCountry(String simCountry) {
         this.simCountry = simCountry;
     }
-
     public String getSimProvider() {
         return simProvider;
     }
-
     public void setSimProvider(String simProvider) {
         this.simProvider = simProvider;
     }
-
     public String getSimType() {
         return simType;
     }
-
     public void setSimType(String simType) {
         this.simType = simType;
     }
-
     public double getSimCredit() {
         return simCredit;
     }
-
     public void setSimCredit(double simCredit) {
         this.simCredit = simCredit;
     }
-
     public boolean isRoaming() {
         return isRoaming;
     }
-
     public void setIsRoaming(boolean isRoaming) {
         this.isRoaming = isRoaming;
     }
-
     public boolean isActive(){
         return isActive;
     }
-
     public void setIsActive(boolean isActive){
         this.isActive = isActive;
     }
-
     public String getSimNotes() {
         return simNotes;
     }
-
     public void setSimNotes(String simNotes) {
         this.simNotes = simNotes;
     }
-
-    public String getSimSize() {
-        return simSize;
-    }
-
-    public void setSimSize(String simSize) {
-        this.simSize = simSize;
-    }
-
+    public String getSimSize() {return simSize;}
+    public void setSimSize(String simSize) {this.simSize = simSize;}
     public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
-
     public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
     // Extra Model Methods
-
     /**
      * ToString Method
      * @return SIM Data Format
      */
     public String toString() {
         String s = "";
+
         s += getSimName() + "\t" + getSimCountry() + "\t";
+        // Roaming Checks
         if (isRoaming()) {
             s += "ON ROAM\t";
         }
+        // Active Sim Check
         if(isActive()){
             s += "IN USE \t";
         }
-        s += "(" + getSimCredit();
         // Balance Check
+        s += "(" + getSimCredit();
         if (getSimCredit() <= 10.00) {
             s += ": TopUp Required!)";
         } else if (getSimCredit() == 0.00) {
@@ -216,6 +193,7 @@ public class Sim {
         s += "#" + getSimPIN();
         s += "#" + getSimCredit();
         s += "#" + isRoaming();
+        s += "#" + getSimSize();
         s += "#" + isActive();
         s += "#" + getSimNotes();
         s += "#" + getLastUpdated();
