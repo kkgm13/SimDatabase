@@ -14,7 +14,7 @@ import java.util.UUID;
  *
  */
 public class Sim {
-    private UUID simID;
+//    private UUID simID;                     // Unique Identifier
     private String simName;                 // User Defined Statement to define a SIM
     private String simNumber;               // Phone Number registered to this SIM
     private int simPIN;                     // SIM PIN code assigned to this SIM
@@ -27,23 +27,6 @@ public class Sim {
     private boolean isActive;               // Whether if this SIM is currently active and in use
     private String simNotes;                // User Defined Notes of the SIM
     private LocalDateTime lastUpdated;      // Last Updated Date Time
-
-    /**
-     * Existing SIM Constructor
-     *  Get the selected SIM
-     */
-    public Sim() {
-        simName = null;
-        simNumber = null;
-        simPIN = 0;
-        simCountry = null;
-        simProvider = null;
-        simType = null;
-        simCredit = 0.00;
-        isRoaming = false;
-        simNotes = null;
-        lastUpdated = LocalDateTime.now();
-    }
 
     /**
      * Existing SIM Constructor
@@ -70,14 +53,14 @@ public class Sim {
         this.simProvider = simProvider;
         this.simType = simType;
         this.simCredit = simCredit;
-        this.isRoaming = isRoaming;
+        this.isRoaming = false;
         this.isActive = isActive;
         this.simNotes = simNotes;
         this.lastUpdated = lastUpdated;
     }
 
     //Encapsulation (Getter and Setters)
-    public UUID getSimID(){return simID;}
+//    public UUID getSimID(){return simID;}
     public String getSimName() {
         return simName;
     }
@@ -152,18 +135,17 @@ public class Sim {
      * ToString Method
      * @return SIM Data Format
      */
+    @Override
     public String toString() {
         String s = "";
-
+//        s += getSimID() + "\t";
         s += getSimName() + "\t" + getSimCountry() + "\t";
         // Roaming Checks
         if (isRoaming()) {
             s += "ON ROAM\t";
         }
         // Active Sim Check
-        if(isActive()){
-            s += "IN USE \t";
-        }
+        s += isActive() ? "IN USE \t": "";
         // Balance Check
         s += "(" + getSimCredit();
         if (getSimCredit() <= 10.00) {
@@ -183,9 +165,8 @@ public class Sim {
      */
     public String write2DB() {
         String s = "";
-        //    s += getSimID();
-//s += "#" + getSimName();
-        s += getSimName();
+//        s += getSimID();
+        s += "#" + getSimName();
         s += "#" + getSimNumber();
         s += "#" + getSimCountry();
         s += "#" + getSimProvider();
