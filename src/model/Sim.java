@@ -1,6 +1,5 @@
 package model;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * SIM Class
@@ -14,12 +13,11 @@ import java.util.UUID;
  *
  */
 public class Sim {
-//    private UUID simID;                     // Unique Identifier
     private String simName;                 // User Defined Statement to define a SIM
     private String simNumber;               // Phone Number registered to this SIM
     private int simPIN;                     // SIM PIN code assigned to this SIM
     private String simCountry;              // Country of Origin of this SIM
-    private String simProvider;             // Phone Company Provider of this SIM in the Country
+    private String simCarrier;             // Phone Company Provider of this SIM in the Country
     private String simType;                 // Type of SIM associated (Pay as You Go, Contract, etc...)
     private String simSize;                 // The size of the SIM (Standard Mini, Micro or Nano)
     private double simCredit;               // Amount of Credit in this SIM
@@ -36,7 +34,7 @@ public class Sim {
      * @param simNumber
      * @param simPIN
      * @param simCountry
-     * @param simProvider
+     * @param simCarrier
      * @param simType
      * @param simCredit
      * @param isRoaming
@@ -44,13 +42,13 @@ public class Sim {
      * @param simNotes
      * @param lastUpdated
      */
-    public Sim(String simName, String simNumber, int simPIN, String simCountry,
-               String simProvider, String simType, double simCredit, boolean isRoaming, boolean isActive, String simNotes, LocalDateTime lastUpdated) {
+    public Sim(String simNumber, String simName, int simPIN, String simCountry,
+               String simCarrier, String simType, double simCredit, boolean isRoaming, boolean isActive, String simNotes, LocalDateTime lastUpdated) {
         this.simName = simName;
         this.simNumber = simNumber;
         this.simPIN = simPIN;
         this.simCountry = simCountry;
-        this.simProvider = simProvider;
+        this.simCarrier = simCarrier;
         this.simType = simType;
         this.simCredit = simCredit;
         this.isRoaming = false;
@@ -59,8 +57,9 @@ public class Sim {
         this.lastUpdated = lastUpdated;
     }
 
-    //Encapsulation (Getter and Setters)
-//    public UUID getSimID(){return simID;}
+    /**
+     * Encapsulation (Getter and Setters)
+     */
     public String getSimName() {
         return simName;
     }
@@ -85,11 +84,11 @@ public class Sim {
     public void setSimCountry(String simCountry) {
         this.simCountry = simCountry;
     }
-    public String getSimProvider() {
-        return simProvider;
+    public String getSimCarrier() {
+        return simCarrier;
     }
-    public void setSimProvider(String simProvider) {
-        this.simProvider = simProvider;
+    public void setSimCarrier(String simCarrier) {
+        this.simCarrier = simCarrier;
     }
     public String getSimType() {
         return simType;
@@ -138,24 +137,31 @@ public class Sim {
     @Override
     public String toString() {
         String s = "";
-//        s += getSimID() + "\t";
         s += getSimName() + "\t" + getSimCountry() + "\t";
         // Roaming Checks
         if (isRoaming()) {
             s += "ON ROAM\t";
         }
         // Active Sim Check
-        s += isActive() ? "IN USE \t": "";
+        s += isActive() ? "IN USE \t": "OFFLINE";
         // Balance Check
         s += "(" + getSimCredit();
-        if (getSimCredit() <= 10.00) {
-            s += ": TopUp Required!)";
-        } else if (getSimCredit() == 0.00) {
+        if (getSimCredit() <= 1.00) {
             s += ": TopUp IMMEDIATELY!)";
+        } else if (getSimCredit() <= 10.00) {
+            s += ": TopUp Required!)";
         } else {
             s += ")";
         }
         return s;
+    }
+
+    public void activate() {
+        isActive = true;
+    }
+
+    public void deactivate() {
+        isActive = false;
     }
 
     /**
@@ -165,11 +171,10 @@ public class Sim {
      */
     public String write2DB() {
         String s = "";
-//        s += getSimID();
+        s += getSimNumber();
         s += "#" + getSimName();
-        s += "#" + getSimNumber();
         s += "#" + getSimCountry();
-        s += "#" + getSimProvider();
+        s += "#" + getSimCarrier();
         s += "#" + getSimType();
         s += "#" + getSimPIN();
         s += "#" + getSimCredit();

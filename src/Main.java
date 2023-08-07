@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 public class Main {
     public static void main(String[] args) {
         //Test
-        Sim sim = new Sim("Personal SIM", "447518497796", 000, "United Kingdom", "O2", "Micro", 31.23, false, true, "", LocalDateTime.now());
+        Sim sim = new Sim("447518497796","Personal SIM",  000, "United Kingdom", "O2", "Micro", 12.32, false, true, "", LocalDateTime.now());
+
         System.out.println(sim);
         System.out.println(sim.getSimName());
 

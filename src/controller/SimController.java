@@ -15,20 +15,14 @@ import java.util.stream.Collectors;
  *
  */
 public class SimController {
-    // Entires Counter
-    private int numEntries;
-    //Sim Model
-    private Sim sim;
+    private Sim sim;            //Sim Model
     //Data Structure
-//    private List<Sim> simDatabase = null;
-    private Map<String, Sim> simDatabase = null; // Preferred
+    private Map<String, Sim> simDatabase; // Preferred
     // Database
     final private String dataFile = "~/Desktop/info.data";
 
     public SimController() {
         simDatabase = new HashMap<>();
-//        simDatabase = new ArrayList<>();
-        numEntries = 0;
     }
 
     /**
@@ -43,6 +37,105 @@ public class SimController {
     }
 
     /**
+     * Get the Selected Sim
+     *
+     * @param phoneNumber Key Phone Number
+     * @return Sim Object Value
+     */
+    public Sim getSim(String phoneNumber){
+        return simDatabase.get(phoneNumber);
+    }
+
+    /**
+     * Edit Sim
+     *
+     * @param oldKey    Old SIM number Identifier
+     * @param sim       Updated Sim
+     */
+    public void editSim(String oldKey, Sim sim) {
+        if (keyInUse(oldKey) && sim != null) {
+            removeSim(oldKey);
+            addSim(sim);
+            System.out.println(sim.getSimName() + "has some information changed.");
+        } else {
+            System.out.println(oldKey+" is not found");
+        }
+    }
+
+    /**
+     * Update SIM???
+     *
+     * @param phoneNumber
+     * @param newCarrier
+     * @param newOwnerName
+     */
+    public void updateSim(String phoneNumber, String newCarrier, String newOwnerName) {
+        Sim sim = simDatabase.get(phoneNumber);
+        if (sim != null) {
+            sim.setSimCarrier(newCarrier);
+            sim.setSimName(newOwnerName);
+        }
+    }
+
+    /**
+     * Remove Sim from list
+     * @param phoneNumber   Sim Number
+     */
+    public void removeSim(String phoneNumber) {
+        if (!keyInUse(phoneNumber)) {
+            System.out.println("No SIM number with " + phoneNumber + " is known in the DB");
+        } else {
+            String tempName = simDatabase.get(phoneNumber).getSimName();
+            String tempNum = simDatabase.get(phoneNumber).getSimNumber();
+            simDatabase.remove(phoneNumber);
+            System.out.println(tempName + "SIM with the number" + tempNum + " has been deleted.");
+        }
+    }
+
+    /**
+     * Get Sim Database
+     *
+     * @return Database
+     */
+    public Map<String, Sim> getAllSIMs() {
+        return simDatabase;
+    }
+
+    /**
+     * Search for specified SIM by Name
+     *
+     * @param name Provided Name
+     * @return Matching Sim
+     */
+    public List<Sim> searchSimByName(String name) {
+        List<Sim> matchingSIMCards = new ArrayList<>();
+        for (Sim sim : simDatabase.values()) {
+            if (sim.getSimName().equalsIgnoreCase(name)) {
+                matchingSIMCards.add(sim);
+            }
+        }
+        return matchingSIMCards;
+    }
+
+    /**
+     * Search for specified SIM by number
+     * @param phoneNumbers List of numbers
+     * @return Matched List
+     */
+    public List<Sim> searchSIMByNumber(List<String> phoneNumbers) {
+        List<Sim> matchingSIMCards = new ArrayList<>();
+
+        for (String phoneNumber : phoneNumbers) {
+            Sim simCard = simDatabase.get(phoneNumber);
+            if (simCard != null) {
+                matchingSIMCards.add(simCard);
+            }
+        }
+
+        return matchingSIMCards;
+    }
+
+    /**
      * Find if Current Key in yse
      *
      * @param key Selected SIM number
@@ -53,147 +146,50 @@ public class SimController {
     }
 
     /**
+     * Activate a SIM
      *
+     * @param phoneNumber Phone Number Key
      */
-    public Sim findbySimName(Sim sim){
-        return null;
+    public void activateSIM(String phoneNumber) {
+        Sim simCard = simDatabase.get(phoneNumber);
+        if (simCard != null) {
+            simCard.activate();
+        }
     }
 
     /**
+     * Deactivate a SIM
      *
+     * @param phoneNumber Phone Number Key
      */
-    public Sim findbySimNumber(Sim sim){
-        return null;
-    }
-
-    /**
-     * Edit Sim
-     * @param oldKey    Old SIM number Identifier
-     * @param sim       Updated Sim
-     */
-    public void editSim(String oldKey, Sim sim) {
-        if (keyInUse(oldKey) && sim != null) {
-            removeSim(oldKey);
-            addSim(sim);
-            System.out.println(sim.getSimName() + "has some information changed.");
+    public void deactivateSIM(String phoneNumber) {
+        Sim simCard = simDatabase.get(phoneNumber);
+        if (simCard != null) {
+            simCard.deactivate();
         }
     }
 
     /**
-     * Remove Sim from list
-     * @param key   Sim Number Identifier
+     * Save Database to File
      */
-    public void removeSim(String key) {
-        if (!keyInUse(key)) {
-            System.out.println("No SIM number with " + key + " is known in the DB");
-        } else {
-            Sim targetSim = simDatabase.get(key);
-            String tempName = targetSim.getSimName();
-            String tempNum = targetSim.getSimNumber();
-            simDatabase.remove(targetSim.getSimName());
-            simDatabase.remove(targetSim.getSimNumber());
-            simDatabase.remove(key);
-            numEntries--;
-            System.out.println(tempName + "SIM with the number" + tempNum + " has been deleted");
+    public void save() {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
+            outputStream.writeObject(simDatabase);
+            System.out.println("Data saved to file: " + dataFile);
+        } catch (IOException e) {
+            System.err.println("Error saving data to file: " + e.getMessage());
         }
-    }
-
-    public String listSim() {
-        StringBuilder allEntries = new StringBuilder();
-        Set<Sim> sortedDetails = new TreeSet<>(simDatabase.values());
-        Iterator<Sim> it = sortedDetails.iterator();
-        while (it.hasNext()) {
-            Sim sims = it.next();
-            allEntries.append(sims);
-            allEntries.append('\n');
-        }
-        return allEntries.toString();
-    }
-
-//    @SuppressWarnings("unchecked")
-    public Sim[] searchByKey(String keyPrefix) {
-        List<Sim> matches = new ArrayList<>();
-        if (keyPrefix != null) {
-            for(Sim s: simDatabase.values()){
-                if(s.getSimNumber().equalsIgnoreCase(keyPrefix)){
-                    matches.add(s);
-                }
-            }
-        }
-        Sim[] results = new Sim[matches.size()];
-        matches.toArray(results);
-        return results;
-    }
-
-    public void load() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(dataFile));
-        String currentLine;
-        try {
-//            StringBuilder sb = new StringBuilder();
-//            String line = reader.readLine();
-//            while(line != null){
-//                sb.append(line);
-//                sb.append(System.lineSeparator());
-//                line = reader.readLine();
-//            }
-//            reader.close();
-            boolean first = false;
-            String[] fields = new String[0];
-            while((currentLine = reader.readLine()) !=null) {//for each line in txt file
-                if(!first) {//if it is the first line the line is the fields and we save them into an array
-                    fields = currentLine.split(",");
-                    first = true;
-                }
-                else {//for the rest lines we print the information
-                    System.out.println("-------------------");
-                    String[] info=currentLine.split(",");
-                    for (int i = 0; i < fields.length; i++ ) {
-                        System.out.println(fields[i] +": "+ info[i]);
-                    }
-                }
-            }
-        } catch (IOException ex) {
-            System.out.println("Error: Data File is not found.");
-            System.out.println("Error Log: "+ex);
-        }
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(dataFile));
-
-        for(String key : properties.stringPropertyNames()){
-//            simDatabase.put(key, properties.getProperty(key, dataFile)); //Check for incompatible
-        }
-    }
-
-    public void save() throws IOException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(dataFile));
-            for (Map.Entry<String, Sim> entry: simDatabase.entrySet()) {
-                Sim sim = simDatabase.get(entry);
-                bw.write(sim.write2DB());
-                bw.newLine();
-            }
-            bw.close();
-        } catch (IOException ex){
-            System.out.println("Database File not Found");
-        }
-    }
-
-
-    /**
-     * Get Number of entries avaliable
-     *
-     * @return Number of entries
-     */
-    public int getNumEntries() {
-        return numEntries;
     }
 
     /**
-     * Get Database
-     *
-     * @return Database
+     * Load Database from File
      */
-    public Map<String, Sim> getDatabase() {
-        return simDatabase;
+    public void load() {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(dataFile))) {
+            simDatabase = (Map<String, Sim>) inputStream.readObject();
+            System.out.println("Data loaded from file: " + dataFile);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error loading data from file: " + e.getMessage());
+        }
     }
 }
