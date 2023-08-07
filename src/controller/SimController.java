@@ -118,6 +118,21 @@ public class SimController {
     }
 
     /**
+     * Search for specified SIM by Provider
+     * @param carrier   Sim Carrier Name
+     * @return Matching Sim
+     */
+    public List<Sim> getSIMCardsByCarrier(String carrier) {
+        List<Sim> matchingSIMCards = new ArrayList<>();
+        for (Sim sim : simDatabase.values()) {
+            if (sim.getSimCarrier().equalsIgnoreCase(carrier)) {
+                matchingSIMCards.add(sim);
+            }
+        }
+        return matchingSIMCards;
+    }
+
+    /**
      * Search for specified SIM by number
      * @param phoneNumbers List of numbers
      * @return Matched List
@@ -141,7 +156,7 @@ public class SimController {
      * @param key Selected SIM number
      * @return Sim Number Key information
      */
-    public boolean keyInUse(String key) {
+    private boolean keyInUse(String key) {
         return simDatabase.containsKey(key);
     }
 

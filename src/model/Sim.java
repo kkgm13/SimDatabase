@@ -129,6 +129,10 @@ public class Sim {
         this.lastUpdated = lastUpdated;
     }
 
+
+    public String getStatus() {
+        return isActive ? "IN USE \t": "OFFLINE";
+    }
     // Extra Model Methods
     /**
      * ToString Method
@@ -143,7 +147,7 @@ public class Sim {
             s += "ON ROAM\t";
         }
         // Active Sim Check
-        s += isActive() ? "IN USE \t": "OFFLINE";
+        s += getStatus();
         // Balance Check
         s += "(" + getSimCredit();
         if (getSimCredit() <= 1.00) {
