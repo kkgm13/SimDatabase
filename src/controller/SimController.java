@@ -1,8 +1,12 @@
 package controller;
 
 import model.Sim;
+import view.CLI;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,15 +16,14 @@ import java.util.stream.Collectors;
  * @version 1.0     - Initial Creation
  * @version 1.0.1   - Add, Edit, Remove, Similar Number Check, and List methods
  * @version 1.0.2   - Migrated to IntelliJ
+ * @version 1.0.3   - Revamped the Entire Controller
  *
  */
 public class SimController {
-    private Sim sim;            //Sim Model
-    //Data Structure
-    private Map<String, Sim> simDatabase; // Preferred
-    // Database
-    final private String dataFile = "~/Desktop/info.data";
-
+    private Map<String, Sim> simDatabase; //Data Structure
+    // Database Path and FileName
+    final private String dataPath = System.getProperty("user.home")+"/Desktop/";
+    final private String dataFile = "info.data";
     public SimController() {
         simDatabase = new HashMap<>();
     }
@@ -29,10 +32,14 @@ public class SimController {
      * Add the Sim to database
      * @param sim Newly made Sim
      */
-    public void addSim(Sim sim) {
-        if (sim != null) {
+    public void addSIM(Sim sim) {
+        if(sim != null && numberInUse(sim.getSimNumber())){
+            System.out.println("SIM number is known in the database already");
+        } else if (sim != null && !numberInUse(sim.getSimNumber())) {
             simDatabase.put(sim.getSimNumber(), sim);
-            System.out.println("Sim Added");
+            System.out.println("SIM Added");
+        } else {
+            System.out.println("Error in Saving SIM");
         }
     }
 
@@ -42,38 +49,23 @@ public class SimController {
      * @param phoneNumber Key Phone Number
      * @return Sim Object Value
      */
-    public Sim getSim(String phoneNumber){
+    public Sim getSIM(String phoneNumber){
         return simDatabase.get(phoneNumber);
     }
 
     /**
      * Edit Sim
      *
-     * @param oldKey    Old SIM number Identifier
+     * @param oldNumber    Old SIM number Identifier
      * @param sim       Updated Sim
      */
-    public void editSim(String oldKey, Sim sim) {
-        if (keyInUse(oldKey) && sim != null) {
-            removeSim(oldKey);
-            addSim(sim);
+    public void editSIM(String oldNumber, Sim sim) {
+        if (!numberInUse(oldNumber) && sim != null) {
+            removeSIM(oldNumber);
+            addSIM(sim);
             System.out.println(sim.getSimName() + "has some information changed.");
         } else {
-            System.out.println(oldKey+" is not found");
-        }
-    }
-
-    /**
-     * Update SIM???
-     *
-     * @param phoneNumber
-     * @param newCarrier
-     * @param newOwnerName
-     */
-    public void updateSim(String phoneNumber, String newCarrier, String newOwnerName) {
-        Sim sim = simDatabase.get(phoneNumber);
-        if (sim != null) {
-            sim.setSimCarrier(newCarrier);
-            sim.setSimName(newOwnerName);
+            System.out.println(oldNumber+" is not found");
         }
     }
 
@@ -81,12 +73,12 @@ public class SimController {
      * Remove Sim from list
      * @param phoneNumber   Sim Number
      */
-    public void removeSim(String phoneNumber) {
-        if (!keyInUse(phoneNumber)) {
+    public void removeSIM(String phoneNumber) {
+        if (!numberInUse(phoneNumber)) {
             System.out.println("No SIM number with " + phoneNumber + " is known in the DB");
         } else {
-            String tempName = simDatabase.get(phoneNumber).getSimName();
-            String tempNum = simDatabase.get(phoneNumber).getSimNumber();
+            String tempName = getSIM(phoneNumber).getSimName();
+            String tempNum = getSIM(phoneNumber).getSimNumber();
             simDatabase.remove(phoneNumber);
             System.out.println(tempName + "SIM with the number" + tempNum + " has been deleted.");
         }
@@ -105,9 +97,9 @@ public class SimController {
      * Search for specified SIM by Name
      *
      * @param name Provided Name
-     * @return Matching Sim
+     * @return Matching SIMs
      */
-    public List<Sim> searchSimByName(String name) {
+    public List<Sim> searchSIMByName(String name) {
         List<Sim> matchingSIMCards = new ArrayList<>();
         for (Sim sim : simDatabase.values()) {
             if (sim.getSimName().equalsIgnoreCase(name)) {
@@ -120,7 +112,7 @@ public class SimController {
     /**
      * Search for specified SIM by Provider
      * @param carrier   Sim Carrier Name
-     * @return Matching Sim
+     * @return Matching SIMs
      */
     public List<Sim> getSIMCardsByCarrier(String carrier) {
         List<Sim> matchingSIMCards = new ArrayList<>();
@@ -133,30 +125,27 @@ public class SimController {
     }
 
     /**
-     * Search for specified SIM by number
-     * @param phoneNumbers List of numbers
-     * @return Matched List
+     * Search for Specific SIM by Phone Number
+     * @param partialNumber SIM Number
+     * @return  Matching SIMS
      */
-    public List<Sim> searchSIMByNumber(List<String> phoneNumbers) {
+    public List<Sim> searchSIMByNumber(String partialNumber) {
         List<Sim> matchingSIMCards = new ArrayList<>();
-
-        for (String phoneNumber : phoneNumbers) {
-            Sim simCard = simDatabase.get(phoneNumber);
-            if (simCard != null) {
-                matchingSIMCards.add(simCard);
+        for (Sim sim : simDatabase.values()) {
+            if (sim.getSimNumber().contains(partialNumber)) {
+                matchingSIMCards.add(sim);
             }
         }
-
         return matchingSIMCards;
     }
 
     /**
-     * Find if Current Key in yse
+     * Find if Current Number in the database
      *
-     * @param key Selected SIM number
-     * @return Sim Number Key information
+     * @param key   Selected SIM number
+     * @return Boolean if SIM Exists in Database
      */
-    private boolean keyInUse(String key) {
+    private boolean numberInUse(String key) {
         return simDatabase.containsKey(key);
     }
 
@@ -167,8 +156,13 @@ public class SimController {
      */
     public void activateSIM(String phoneNumber) {
         Sim simCard = simDatabase.get(phoneNumber);
-        if (simCard != null) {
+        if(simCard != null && simCard.isActive()){
+            System.out.println(phoneNumber+" is already deactivated.");
+        } else if (simCard != null) {
             simCard.activate();
+            System.out.println(phoneNumber+" is now activated.");
+        } else {
+            System.out.println("Number is not registered");
         }
     }
 
@@ -179,32 +173,66 @@ public class SimController {
      */
     public void deactivateSIM(String phoneNumber) {
         Sim simCard = simDatabase.get(phoneNumber);
-        if (simCard != null) {
+        if(simCard != null && !simCard.isActive()){
+            System.out.println(phoneNumber+" is already deactivated.");
+        } else if (simCard != null) {
             simCard.deactivate();
+            System.out.println(phoneNumber+" is now deactivated.");
+        } else {
+            System.out.println("Number is not registered");
         }
     }
 
     /**
      * Save Database to File
      */
-    public void save() {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
-            outputStream.writeObject(simDatabase);
-            System.out.println("Data saved to file: " + dataFile);
+    public void saveToFile() {
+        try {
+            Path filePath = Path.of(dataPath, dataFile);    //Path File
+            if (!Files.exists(filePath.getParent())) {      // Validate if file exists or not
+                Files.createFile(filePath);                 // Create file if none
+            }
+            // Start File writer and buffer writer
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
+                for (Sim sim : simDatabase.values()) {
+                    writer.write(sim.write2DB());   // Write the format to file
+                    writer.newLine();               // Create new line
+                }
+                System.out.println("SIM database saved to " + filePath);
+            } catch (IOException e) {
+                System.out.println("Error writing SIM database to file: " + e.getMessage());
+            }
         } catch (IOException e) {
-            System.err.println("Error saving data to file: " + e.getMessage());
+            System.out.println("Error creating file: " + e.getMessage());
         }
     }
 
     /**
      * Load Database from File
      */
-    public void load() {
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(dataFile))) {
-            simDatabase = (Map<String, Sim>) inputStream.readObject();
-            System.out.println("Data loaded from file: " + dataFile);
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading data from file: " + e.getMessage());
+    public void loadFromFile() {
+        Path filePath = Path.of(dataPath, dataFile);    // Path File
+        if (!Files.exists(filePath)) {                  // Does the file exist?
+            System.out.println("File not found: " + filePath);
+            return;
+        }
+        // Start Reader to get from file
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("#");
+                boolean isRoaming = Boolean.parseBoolean(parts[7]);
+                boolean isActive = Boolean.parseBoolean(parts[9]);
+                String notes = null;
+                if (!parts[10].isBlank()) {
+                    notes = parts[10];
+                }
+                Sim sim = new Sim(parts[0],parts[1],parts[2],parts[3], parts[4],parts[5],Double.parseDouble(parts[6]),isRoaming,parts[8],isActive, notes, LocalDateTime.parse(parts[11]));
+                simDatabase.put(sim.getSimNumber(), sim);
+            }
+            System.out.println("SIM database loaded from " + filePath);
+        } catch (IOException e) {
+            System.out.println("Error reading SIM data file from : " + e.getMessage());
         }
     }
 }

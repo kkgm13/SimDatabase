@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
  * @version 1.0.2   - Add SIM Size
  * @version 1.0.3   - Added Last Updated & Renamed isActive
  * @version 1.0.4   - Migrated to IntelliJ
+ * @version 1.0.5   - Revamped the Entire Model
  *
  */
 public class Sim {
@@ -30,36 +31,37 @@ public class Sim {
      * Existing SIM Constructor
      *  Get the selected SIM
      *
-     * @param simName
-     * @param simNumber
-     * @param simPIN
-     * @param simCountry
-     * @param simCarrier
-     * @param simType
-     * @param simCredit
-     * @param isRoaming
-     * @param isActive
-     * @param simNotes
-     * @param lastUpdated
+     * @param simName       SIM custom name
+     * @param simNumber     SIM number with country code
+     * @param simPIN        SIM PIN number
+     * @param simCountry    Country of SIM
+     * @param simCarrier    Carrier of SIM
+     * @param simType       Type of SIM (Contract or Top Up)
+     * @param simCredit     Credit on the SIM
+     * @param isRoaming     Is SIM Roaming
+     * @param simSize       Size Type of SIM
+     * @param isActive      Is SIM Active
+     * @param simNotes      Notes on the SIM
+     * @param lastUpdated   ISO Date Time for last Updated
      */
-    public Sim(String simNumber, String simName, int simPIN, String simCountry,
-               String simCarrier, String simType, double simCredit, boolean isRoaming, boolean isActive, String simNotes, LocalDateTime lastUpdated) {
+    public Sim(String simNumber, String simName, String simCountry, String simCarrier, String simType, String simPIN, double simCredit, boolean isRoaming, String simSize, boolean isActive, String simNotes, LocalDateTime lastUpdated) {
         this.simName = simName;
         this.simNumber = simNumber;
-        this.simPIN = simPIN;
+        this.simPIN = Integer.parseInt(simPIN);
         this.simCountry = simCountry;
         this.simCarrier = simCarrier;
         this.simType = simType;
         this.simCredit = simCredit;
-        this.isRoaming = false;
+        this.isRoaming = isRoaming;
+        this.simSize = simSize;
         this.isActive = isActive;
         this.simNotes = simNotes;
         this.lastUpdated = lastUpdated;
     }
 
-    /**
-     * Encapsulation (Getter and Setters)
-     */
+    ///////////////////////////////
+    /////Encapsulation Methods/////
+    ///////////////////////////////
     public String getSimName() {
         return simName;
     }
@@ -129,13 +131,11 @@ public class Sim {
         this.lastUpdated = lastUpdated;
     }
 
-
-    public String getStatus() {
-        return isActive ? "IN USE \t": "OFFLINE";
-    }
-    // Extra Model Methods
+    ///////////////////////////////
+    /////Specified Methods/////////
+    ///////////////////////////////
     /**
-     * ToString Method
+     * Developer Specified toString Format Method
      * @return SIM Data Format
      */
     @Override
@@ -160,18 +160,40 @@ public class Sim {
         return s;
     }
 
+    public String getStatus() {
+        return isActive ? "IN USE \t": "OFFLINE \t";
+    }
     public void activate() {
         isActive = true;
+        System.out.println("This SIM is reactivated");
     }
-
     public void deactivate() {
         isActive = false;
+        System.out.println("This SIM is deactivated");
     }
 
     /**
-     * Write to the Database
-     * @return
-     * @todo Serialize this ASAP
+     * Top up the Balance
+     * @param amount    Amount that is topped up
+     */
+    public void topUpBalance(double amount) {
+        // Implement topping up the balance of the SIM card
+        System.out.println("Topping up balance with $" + amount);
+    }
+
+    /**
+     * Update the Balance
+     * @param amount    Amount that is topped up
+     */
+    public void updateBalance(double amount) {
+        // Implement topping up the balance of the SIM card
+        System.out.println("Topping up balance with $" + amount);
+    }
+
+    /**
+     * Write to the file
+     * @return  File Seralization Format
+     * @todo    Serialize this ASAP
      */
     public String write2DB() {
         String s = "";
