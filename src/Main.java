@@ -9,6 +9,7 @@ import java.util.List;
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
+
     public static void main(String[] args) {
         //Test
 //        Sim sim = new Sim("447518497796","Personal SIM",  000, "United Kingdom", "O2", "Micro", 12.32, true, true, "", LocalDateTime.now());
@@ -49,5 +50,6 @@ public class Main {
         System.out.println(controller.getAllSIMs());
         System.out.println("\n===================================");
 
+        //
     }
 }
