@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  *
  */
 public class SimController {
-    private Map<String, Sim> simDatabase; //Data Structure
+    private final Map<String, Sim> simDatabase; //Data Structure
     // Database Path and FileName
     final private String dataPath = System.getProperty("user.home")+"/Desktop/";
     final private String dataFile = "info.data";
@@ -30,7 +30,7 @@ public class SimController {
 
     /**
      * Add the Sim to database
-     * @param sim Newly made Sim
+     * @param sim Newly Created Sim
      */
     public void addSIM(Sim sim) {
         if(sim != null && numberInUse(sim.getSimNumber())){
@@ -56,8 +56,8 @@ public class SimController {
     /**
      * Edit Sim
      *
-     * @param oldNumber    Old SIM number Identifier
-     * @param sim       Updated Sim
+     * @param oldNumber     Old SIM number Identifier
+     * @param sim           Updated Sim
      */
     public void editSIM(String oldNumber, Sim sim) {
         if (!numberInUse(oldNumber) && sim != null) {
