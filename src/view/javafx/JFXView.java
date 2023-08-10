@@ -54,16 +54,9 @@ public class JFXView{
 //                System.exit(0);
 //            }
 //        });
-//
-//        // Add all UI Elements to the Scene in an order
-//        paneRoot.getChildren().addAll(actButton);
-//        // Set the scene size
-//        this.scene = new Scene(root,
-//                (4*gap) * gap,
-//                (3*gap)* gap
-//        );
 
         TableView tableView = new TableView();
+        tableView.setPadding(new Insets(0, (gap*4),gap,0));
 
         TableColumn<Sim, String> column1 = new TableColumn<>("SIM Name");
         column1.setCellValueFactory(new PropertyValueFactory<>("simName"));
@@ -100,8 +93,8 @@ public class JFXView{
 
         tableView.getColumns().addAll(column1,column2, column5, column6);
 
-        tableView.getItems().add(new Sim("447518497796","Personal SIM",  "United Kingdom", "O2", "Micro", "0000",12.32, true, "Micro",true, "", LocalDateTime.now()));
-        tableView.getItems().add(new Sim("639157871608","Personal SIM",  "Philippines", "Globe", "Standard", "0000", 00.00, true, "Standard", false, "Deactivated in 2015", LocalDateTime.now()));
+        tableView.getItems().add(new Sim("447518497796","Personal SIM",  "United Kingdom", "O2", "Micro", "0000",12.32, false, "Micro",true, "", LocalDateTime.now()));
+        tableView.getItems().add(new Sim("639157871608","Childhood SIM",  "Philippines", "Globe", "Standard", "0000", 00.00, true, "Standard", false, "Deactivated in 2015", LocalDateTime.now().minusDays(3).minusHours(6)));
 
         TableView.TableViewSelectionModel<Sim> selectionModel = tableView.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
